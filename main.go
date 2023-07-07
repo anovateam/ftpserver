@@ -5,6 +5,7 @@ import (
 	"flag"
 	"io"
 	"io/ioutil"
+	"net/http"
 	"os"
 	"os/signal"
 	"syscall"
@@ -13,6 +14,7 @@ import (
 	ftpserver "github.com/fclairamb/ftpserverlib"
 	gkwrap "github.com/fclairamb/go-log/gokit"
 	gokit "github.com/go-kit/log"
+	"github.com/prometheus/client_golang/prometheus/promhttp"
 
 	"github.com/fclairamb/ftpserver/config"
 	"github.com/fclairamb/ftpserver/server"
@@ -105,6 +107,8 @@ func main() {
 
 		return
 	}
+	http.Handle("/metrics", promhttp.Handler())
+	go http.ListenAndServe(":2112", nil)
 
 	if err := ftpServer.ListenAndServe(); err != nil {
 		logger.Error("Problem listening", "err", err)

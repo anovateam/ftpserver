@@ -18,6 +18,7 @@ import (
 	"github.com/fclairamb/ftpserver/config/confpar"
 	"github.com/fclairamb/ftpserver/fs"
 	"github.com/fclairamb/ftpserver/fs/fslog"
+	"github.com/fclairamb/ftpserver/metric"
 )
 
 // Server structure
@@ -87,6 +88,8 @@ func (s *Server) ClientConnected(cc serverlib.ClientContext) (string, error) {
 	s.nbClientsSync.Lock()
 	defer s.nbClientsSync.Unlock()
 	s.nbClients++
+	metric.UpdateActiveConnectionsSize(s.nbClients)
+	metric.IncreaseTotalConnections()
 	s.logger.Info(
 		"Client connected",
 		"clientId", cc.ID(),
@@ -107,6 +110,7 @@ func (s *Server) ClientDisconnected(cc serverlib.ClientContext) {
 	defer s.nbClientsSync.Unlock()
 
 	s.nbClients--
+	metric.UpdateActiveConnectionsSize(s.nbClients)
 
 	s.logger.Info(
 		"Client disconnected",
@@ -170,6 +174,7 @@ func (s *Server) loadFs(access *confpar.Access) (afero.Fs, error) {
 func (s *Server) AuthUser(cc serverlib.ClientContext, user, pass string) (serverlib.ClientDriver, error) {
 	access, errAccess := s.config.GetAccess(user, pass)
 	if errAccess != nil {
+		metric.IncreaseAuthErr()
 		return nil, errAccess
 	}
 

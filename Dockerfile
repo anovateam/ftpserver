@@ -16,5 +16,6 @@ RUN CGO_ENABLED=0 go build -mod=readonly -ldflags='-w -s' -v -o ftpserver
 FROM scratch
 WORKDIR /app
 EXPOSE 2121-2130
+EXPOSE 2112
 COPY --from=builder /workspace/ftpserver /bin/ftpserver
 ENTRYPOINT [ "/bin/ftpserver" ]
