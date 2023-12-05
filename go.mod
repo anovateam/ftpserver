@@ -2,6 +2,8 @@ module github.com/fclairamb/ftpserver
 
 go 1.19
 
+replace github.com/fclairamb/ftpserverlib v0.22.0 => github.com/anovateam/ftpserverlib v0.0.0-20231205154934-2fea5f639a46
+
 require (
 	github.com/aws/aws-sdk-go v1.48.12
 	github.com/fclairamb/afero-dropbox v0.1.0
